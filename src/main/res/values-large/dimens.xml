@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+    <dimen name="widget_timer_text_size">25sp</dimen>
+    <dimen name="widget_screen_text_size">22sp</dimen>
+
+</resources>

@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+    <LinearLayout
+        android:orientation="vertical"
+        android:id="@+id/time_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/linear1"
+        android:gravity="center">
+    <TextView
+            android:id="@+id/time_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:typeface="normal"
+            android:gravity="center"
+            android:textSize="80sp"
+            android:textColor="@color/grey"
+            android:clickable="true"
+            android:onClick="getTime"
+            />
+        <TextView
+            android:id="@+id/hint"
+            android:paddingTop="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textSize="20sp"
+            android:textColor="@color/grey"
+            android:text="@string/hint"
+            />
+    </LinearLayout>
+    <LinearLayout
+            android:layout_centerInParent="true"
+            android:id="@id/linear1"
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:layout_margin="20dp"
+            android:background="@drawable/shadow"
+            android:padding="5dp"
+            android:clickable="true"
+            android:onClick="timerClick"
+            >
+
+        <ImageView
+                android:id="@+id/timer_image"
+                android:src="@drawable/timer_mini_ns"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.2"
+            android:contentDescription="@string/wifi_timer"
+                />
+
+        <TextView
+                android:gravity="center"
+                android:textSize="30sp"
+                android:typeface="serif"
+                android:id="@+id/timer_text"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.8"
+                android:text="@string/wifi_timer"
+                android:textColor="@color/grey"
+                />
+    </LinearLayout>
+
+    <LinearLayout
+            android:layout_centerInParent="true"
+            android:id="@+id/linear2"
+            android:layout_below="@id/linear1"
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:layout_margin="20dp"
+            android:background="@drawable/shadow"
+            android:padding="5dp"
+            android:clickable="true"
+            android:onClick="screenClick"
+
+            >
+
+        <ImageView
+                android:id="@+id/screen_image"
+                android:src="@drawable/screen_mini_ns"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.2"
+                android:contentDescription="@string/wifi_screen"
+                />
+
+        <TextView
+                android:gravity="center"
+                android:textSize="30sp"
+                android:typeface="serif"
+                android:id="@+id/screen_text"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.8"
+                android:text="@string/wifi_screen"
+                android:textColor="@color/grey"
+                />
+    </LinearLayout>
+</RelativeLayout>

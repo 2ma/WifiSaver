@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Wifi Saver</string>
+    <string name="wifi_timer">Wifi timer</string>
+    <string name="wifi_screen">Screen Wifi</string>
+    <string name="time_text_string">HH:MM</string>
+    <string name="widget_timer_text">timer</string>
+    <string name="widget_screen_text">screen</string>
+    <string name="hint">hour : minute</string>
+    <string name="time_separator">:</string>
+    <string name="hour_hint">hour</string>
+    <string name="minute_hint">minute</string>
+    <string name="number_picker_toast">Please enter a time</string>
+</resources>
