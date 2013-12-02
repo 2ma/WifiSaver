@@ -10,11 +10,12 @@ import android.net.wifi.WifiManager;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.os.SystemClock;
+import android.util.Log;
 
 public class WifiSwitchService extends IntentService {
 
 
-
+    //service to turn wifi on,wait 30s,turn wifi off(if screen is off),set alarm
 
     public WifiSwitchService() {
         super("WifiSwitchService");
@@ -55,7 +56,7 @@ public class WifiSwitchService extends IntentService {
             PendingIntent mPendingIntent = PendingIntent.getBroadcast(this, Constants.REQUEST_CODE, mIntent, PendingIntent.FLAG_CANCEL_CURRENT);
 
             mAlarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + wakeupTime, mPendingIntent);
-
+            Log.i("WifiSaver","service off, 2 min broadcast");
             if (mWakeLock!=null)mWakeLock.release();
         }
     }

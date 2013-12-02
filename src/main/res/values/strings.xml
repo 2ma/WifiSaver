@@ -4,7 +4,7 @@
     <string name="app_name">Wifi Saver</string>
     <string name="wifi_timer">Wifi timer</string>
     <string name="wifi_screen">Screen Wifi</string>
-    <string name="time_text_string">HH:MM</string>
+    <string name="time_text_string">--:--</string>
     <string name="widget_timer_text">timer</string>
     <string name="widget_screen_text">screen</string>
     <string name="hint">hour : minute</string>

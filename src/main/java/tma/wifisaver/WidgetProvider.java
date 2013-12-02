@@ -13,6 +13,8 @@ import android.widget.RemoteViews;
 
 public class WidgetProvider extends AppWidgetProvider {
 
+    //provider for the widget
+
     public static final String CLICK_ACTION = "tma.wifisaverclick";
     private static int grey;
     private static int blue;

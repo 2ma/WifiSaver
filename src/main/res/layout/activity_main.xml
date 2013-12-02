@@ -9,7 +9,9 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@+id/linear1"
-        android:gravity="center">
+        android:gravity="center"
+        android:onClick="getTime"
+        >
     <TextView
             android:id="@+id/time_text"
             android:layout_width="match_parent"
@@ -18,8 +20,6 @@
             android:gravity="center"
             android:textSize="80sp"
             android:textColor="@color/grey"
-            android:clickable="true"
-            android:onClick="getTime"
             />
         <TextView
             android:id="@+id/hint"
@@ -41,7 +41,7 @@
             android:background="@drawable/shadow"
             android:padding="5dp"
             android:clickable="true"
-            android:onClick="timerClick"
+            android:onClick="timerButtonClick"
             >
 
         <ImageView
@@ -55,7 +55,7 @@
 
         <TextView
                 android:gravity="center"
-                android:textSize="30sp"
+                android:textSize="@dimen/wifi_saver_button_text"
                 android:typeface="serif"
                 android:id="@+id/timer_text"
                 android:layout_width="0dp"
@@ -76,7 +76,7 @@
             android:background="@drawable/shadow"
             android:padding="5dp"
             android:clickable="true"
-            android:onClick="screenClick"
+            android:onClick="screenButtonClick"
 
             >
 

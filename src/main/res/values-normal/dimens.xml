@@ -3,5 +3,7 @@
 
     <dimen name="widget_timer_text_size">20sp</dimen>
     <dimen name="widget_screen_text_size">17sp</dimen>
-
+    <dimen name="number_picker_hour_size">35sp</dimen>
+    <dimen name="number_picker_minute_size">35sp</dimen>
+    <dimen name="wifi_saver_button_text">30sp</dimen>
 </resources>

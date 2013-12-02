@@ -22,8 +22,10 @@ public class MainActivity extends Activity implements NumberPickerFragment.Numbe
     private TextView timerSwitchText, screenSwitchText, timeText;
     private ImageView timerImage, screenImage;
     private int blue, grey,hour, min;
-    private final static int ALARM_DISABLE = 0;
-    private final static int ALARM_ENABLE = 1;
+    private final static int DISABLE = 0;
+    private final static int ENABLE = 1;
+    private ComponentName componentName;
+    private PackageManager packageManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,27 +39,24 @@ public class MainActivity extends Activity implements NumberPickerFragment.Numbe
         timerImage = (ImageView) findViewById(R.id.timer_image);
         screenImage = (ImageView) findViewById(R.id.screen_image);
         mContext = getApplicationContext();
-
-
+        componentName = new ComponentName(mContext, WakupReceiver.class);
+        packageManager = mContext.getPackageManager();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-
         // get settings
         SharedPreferences saveSharedPreferences = mContext.getSharedPreferences(Constants.SHARED_PREF, 0);
         hour = saveSharedPreferences.getInt(Constants.SHARED_HOUR, 0);
         min = saveSharedPreferences.getInt(Constants.SHARED_MINUTE, 0);
         timerState = saveSharedPreferences.getBoolean(Constants.SHARED_TIMER_STATE, false);
-
         //set screen state
-        screenSwitchState();
-
+        screenButtonState();
         //set timer state
-        updateTimerState();
+        timerButtonState();
 
-
+        setTimerDigits();
     }
 
     @Override
@@ -71,73 +70,12 @@ public class MainActivity extends Activity implements NumberPickerFragment.Numbe
     private void updateWidget() {
         Intent widgetUpdateIntent = new Intent(this, WidgetProvider.class);
         widgetUpdateIntent.setAction("android.appwidget.action.APPWIDGET_UPDATE");
-        int[] ids = AppWidgetManager.getInstance(getApplication()).getAppWidgetIds(new ComponentName(getApplication(), WidgetProvider.class));
+        int[] ids = AppWidgetManager.getInstance(mContext).getAppWidgetIds(new ComponentName(mContext, WidgetProvider.class));
         widgetUpdateIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids);
         sendBroadcast(widgetUpdateIntent);
     }
 
-
-
-
-    private void updateTimerState(){
-        if(timerState){
-            timerSwitchText.setTextColor(blue);
-            timerImage.setImageResource(R.drawable.timer_mini);
-            timeText.setTextColor(blue);
-        }else{
-            timerImage.setImageResource(R.drawable.timer_mini_ns);
-            timerSwitchText.setTextColor(grey);
-            timeText.setTextColor(grey);
-        }
-        if (hour != 0 || min != 0) {
-            timeText.setText((hour == 0 ? "00" : hour) + ":" + (min < 10 ? "0"+Integer.toString(min) :min ));
-        } else {
-            timeText.setText(getResources().getString(R.string.time_text_string));
-        }
-    }
-
-    //check wake state
-    private boolean isWakeupEnabled() {
-        ComponentName mComponentName = new ComponentName(mContext, WakupReceiver.class);
-        PackageManager mPackageManager = mContext.getPackageManager();
-        return mPackageManager.getComponentEnabledSetting(mComponentName) == PackageManager.COMPONENT_ENABLED_STATE_ENABLED;
-    }
-
-    //launch time picker to set time for timer
-    public void getTime(View v) {
-        NumberPickerFragment numberPickerFragment = new NumberPickerFragment();
-        numberPickerFragment.setStyle(DialogFragment.STYLE_NO_TITLE,0);
-        getFragmentManager().beginTransaction().add(numberPickerFragment,"numberPicker").commit();
-    }
-
-    public void screenClick(View v) {
-        setWakeup(isWakeupEnabled() ? ALARM_DISABLE : ALARM_ENABLE);
-        screenSwitchState();
-    }
-
-    private void setWakeup(int state) {
-        PackageManager mPackageManager = mContext.getPackageManager();
-        ComponentName mComponentName = new ComponentName(mContext, WakupReceiver.class);
-        if (state == ALARM_DISABLE) {
-            mPackageManager.setComponentEnabledSetting(mComponentName,
-                    PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
-                    PackageManager.DONT_KILL_APP);
-            //if timer is not on,cancel the alarm
-            if (!timerState) {
-                cancelAlarm();
-            }
-        } else {
-            mPackageManager.setComponentEnabledSetting(mComponentName,
-                    PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
-                    PackageManager.DONT_KILL_APP);
-            //start alarm if it's not on
-            if (!timerState) {
-                setAlarm();
-            }
-        }
-    }
-
-    private void screenSwitchState() {
+    private void screenButtonState() {
         if (isWakeupEnabled()) {
             screenSwitchText.setTextColor(blue);
             screenImage.setImageResource(R.drawable.screen_mini);
@@ -147,81 +85,134 @@ public class MainActivity extends Activity implements NumberPickerFragment.Numbe
         }
     }
 
-    public void timerClick(View v) {
-        if (timerState) {
-            cancelTimer();
+
+    private void timerButtonState(){
+        if(timerState){
+            timerSwitchText.setTextColor(blue);
+            timerImage.setImageResource(R.drawable.timer_mini);
+            timeText.setTextColor(blue);
+        }else{
+            timerImage.setImageResource(R.drawable.timer_mini_ns);
+            timerSwitchText.setTextColor(grey);
+            timeText.setTextColor(grey);
+        }
+    }
+
+    private void setTimerDigits(){
+        if (hour != 0 || min != 0) {
+            timeText.setText((hour == 0 ? "00" : hour) + ":" + (min < 10 ? "0" + Integer.toString(min) : min ));
         } else {
+            timeText.setText(getResources().getString(R.string.time_text_string));
+        }
+    }
+
+    //check wake state
+    private boolean isWakeupEnabled() {
+
+        return packageManager.getComponentEnabledSetting(componentName) == PackageManager.COMPONENT_ENABLED_STATE_ENABLED;
+    }
+
+    //launch time picker to set time for timer
+    public void getTime(View v) {
+        NumberPickerFragment numberPickerFragment = new NumberPickerFragment();
+        numberPickerFragment.setStyle(DialogFragment.STYLE_NO_TITLE,0);
+        getFragmentManager().beginTransaction().add(numberPickerFragment,"numberPicker").commit();
+    }
+
+    //screen button
+    public void screenButtonClick(View v) {
+        if (isWakeupEnabled()) {
+            //disable wakeup receiver
+            packageManager.setComponentEnabledSetting(componentName,
+                    PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
+                    PackageManager.DONT_KILL_APP);
+            //if timer is off,cancel the alarm
+            if (!timerState) {
+                changeAlarm(DISABLE);
+            }
+            //set button state
+            screenImage.setImageResource(R.drawable.screen_mini_ns);
+            screenSwitchText.setTextColor(grey);
+        } else {
+            //enable wakeup receiver
+            packageManager.setComponentEnabledSetting(componentName,
+                    PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
+                    PackageManager.DONT_KILL_APP);
+            //set alarm
+            changeAlarm(ENABLE);
+            //set button state
+            screenSwitchText.setTextColor(blue);
+            screenImage.setImageResource(R.drawable.screen_mini);
+        }
+    }
+
+    //timer button
+    public void timerButtonClick(View v) {
+        if (timerState) {
+            //if timer is on,disable
+            changeTimer(DISABLE);
+        } else {
+            //if time is entered enable
             if (hour != 0 || min != 0) {
-                setTimer();
+                changeTimer(ENABLE);
             } else {
                 getTime(null);
             }
         }
     }
 
-    private void setTimer() {
-
-
-        //save hour,min, and timer state
+    // disable/enable timer
+    private void changeTimer(int state){
         SharedPreferences.Editor edit = mContext.getSharedPreferences(Constants.SHARED_PREF,0).edit();
-        edit.putInt(Constants.SHARED_HOUR, hour);
-        edit.putInt(Constants.SHARED_MINUTE, min);
-        edit.putBoolean(Constants.SHARED_TIMER_STATE, true);
-        edit.commit();
-
-        timerState = true;
-
-        updateTimerState();
-
-        //set alarm
-        setAlarm();
-
-
-    }
-
-    private void cancelTimer() {
-
-        //save timer state
-        timerState = false;
-        SharedPreferences.Editor edit = mContext.getSharedPreferences(Constants.SHARED_PREF,0).edit();
-        edit.putBoolean(Constants.SHARED_TIMER_STATE, false);
-        edit.commit();
-        updateTimerState();
-
-        //if screen wake is on, the alarm shouldn't be canceled
-        if (!isWakeupEnabled()) {
-            cancelAlarm();
+        if(state==DISABLE){
+            timerState=false;
+            //set button state
+            timerImage.setImageResource(R.drawable.timer_mini_ns);
+            timerSwitchText.setTextColor(grey);
+            timeText.setTextColor(grey);
+            //disable alarm if wakeup is disabled
+            if (!isWakeupEnabled()) {
+                changeAlarm(DISABLE);
+            }
+        }else{
+            timerState=true;
+            edit.putInt(Constants.SHARED_HOUR, hour);
+            edit.putInt(Constants.SHARED_MINUTE, min);
+            //set button state
+            timerSwitchText.setTextColor(blue);
+            timerImage.setImageResource(R.drawable.timer_mini);
+            timeText.setTextColor(blue);
+            //set alarm
+            changeAlarm(ENABLE);
         }
+        edit.putBoolean(Constants.SHARED_TIMER_STATE, timerState);
+        edit.commit();
     }
 
-    //set alarm
-    private void setAlarm() {
-        PendingIntent mPendingIntent;
-        Intent mIntent = new Intent(mContext, WifiSwitchReceiver.class);
+    // set/cancel alarm for broadcast
+    private void changeAlarm(int state){
+        PendingIntent pendingIntent;
+        Intent intent = new Intent(mContext, WifiSwitchReceiver.class);
         AlarmManager alarmManager = (AlarmManager) mContext.getSystemService(Context.ALARM_SERVICE);
-        mPendingIntent = PendingIntent.getBroadcast(mContext, Constants.REQUEST_CODE, mIntent,
-                PendingIntent.FLAG_CANCEL_CURRENT);
-        alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + Constants.BROADCAST_TIME, mPendingIntent);
-    }
-
-    //cancel alarm
-    public void cancelAlarm() {
-        PendingIntent mPendingIntent;
-        Intent mIntent = new Intent(mContext, WifiSwitchReceiver.class);
-        AlarmManager alarmManager = (AlarmManager) mContext.getSystemService(Context.ALARM_SERVICE);
-        mPendingIntent = PendingIntent.getBroadcast(mContext, Constants.REQUEST_CODE, mIntent,
-                PendingIntent.FLAG_NO_CREATE);
-        if (mPendingIntent != null) {
-            alarmManager.cancel(mPendingIntent);
-            mPendingIntent.cancel();
+        if(state==DISABLE){
+            pendingIntent = PendingIntent.getBroadcast(mContext, Constants.REQUEST_CODE, intent,
+                    PendingIntent.FLAG_NO_CREATE);
+            if (pendingIntent != null) {
+                alarmManager.cancel(pendingIntent);
+                pendingIntent.cancel();
+            }
+        }else{
+            pendingIntent = PendingIntent.getBroadcast(mContext, Constants.REQUEST_CODE, intent,
+                    PendingIntent.FLAG_CANCEL_CURRENT);
+            alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + Constants.BROADCAST_TIME, pendingIntent);
         }
-
     }
 
     @Override
     public void onTimeSet(int hourOfDay, int minute) {
         hour = hourOfDay;
         min = minute;
-        setTimer();
+        setTimerDigits();
+        changeTimer(ENABLE);
     }
 }

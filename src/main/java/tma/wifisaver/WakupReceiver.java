@@ -10,6 +10,7 @@ import android.util.Log;
 
 public class WakupReceiver extends BroadcastReceiver {
 
+    //receiver for handling the screen turning on (user present)
 
     @Override
     public void onReceive(Context context, Intent intent) {

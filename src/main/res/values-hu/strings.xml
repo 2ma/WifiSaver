@@ -3,11 +3,11 @@
     <string name="app_name">Wifi Saver</string>
     <string name="wifi_timer">Wifi időzítő</string>
     <string name="wifi_screen">Wifi kijelző</string>
-    <string name="time_text_string">ÓÓ:PP</string>
     <string name="widget_timer_text">időzítő</string>
     <string name="widget_screen_text">kijelző</string>
     <string name="hint">óra : perc</string>
     <string name="hour_hint">óra</string>
     <string name="minute_hint">perc</string>
     <string name="number_picker_toast">Nem adtál meg időt</string>
+    <string name="time_text_string">--:--</string>
 </resources>

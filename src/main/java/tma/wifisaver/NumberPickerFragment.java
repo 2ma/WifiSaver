@@ -32,9 +32,9 @@ public class NumberPickerFragment extends DialogFragment {
             public void onClick(View v) {
                 int hour, minute;
                 String temp = hourText.getText().toString();
-                hour = temp.equals("") ? 0 : Integer.parseInt(temp);
+                hour = temp.isEmpty() ? 0 : Integer.parseInt(temp);
                 temp = minuteText.getText().toString();
-                minute = temp.equals("") ? 0 : Integer.parseInt(temp);
+                minute = temp.isEmpty() ? 0 : Integer.parseInt(temp);
                 if (hour == 0 && minute == 0) {
                     Toast.makeText(getActivity(), R.string.number_picker_toast, Toast.LENGTH_SHORT).show();
                 } else {
